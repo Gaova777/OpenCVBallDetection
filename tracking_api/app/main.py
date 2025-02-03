@@ -8,7 +8,7 @@ VIDEO_FOLDER = "videos/"
 
 @app.get("/process_video/")
 async def process_local_video():
-    video_filename = "video5.mp4"
+    video_filename = "video3.mp4"
     output_filename = "output.mp4"
     video_path = os.path.join(VIDEO_FOLDER, video_filename)
     output_path = os.path.join(VIDEO_FOLDER, output_filename)
