@@ -6,11 +6,11 @@ from video_tracking import process_video
 app = FastAPI()
 VIDEO_FOLDER = "videos/"
 
-@app.get("/process_video/")
-async def process_local_video():
-    video_filename = "Video5.mp4"
+@app.get("/process_video/{nameFile}")
+async def process_local_video(nameFile: str):
+   
     output_filename = "output.mp4"
-    video_path = os.path.join(VIDEO_FOLDER, video_filename)
+    video_path = os.path.join(VIDEO_FOLDER, nameFile)
     output_path = os.path.join(VIDEO_FOLDER, output_filename)
 
     if not os.path.exists(video_path):
@@ -22,6 +22,7 @@ async def process_local_video():
 
 @app.get("/download_video/{filename}")
 async def download_video(filename: str):
+   
     file_path = os.path.join(VIDEO_FOLDER, filename)
     if not os.path.exists(file_path):
         return {"error": "El archivo no existe"}
