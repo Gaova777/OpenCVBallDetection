@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 def initialize_kalman():
-   
+   #inicializa el filtro con los parametros de entrada neesarios para llamar los metodos de predicción. El filtro se inicializa con una matriz de 6 estados y 2 mediciones.
     kalman = cv.KalmanFilter(6, 2)
     kalman.measurementMatrix = np.array([[1, 0, 0, 0, 0, 0],
                                          [0, 1, 0, 0, 0, 0]], np.float32)

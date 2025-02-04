@@ -10,14 +10,18 @@ from utils import dist
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 def process_video(video_path, output_path="videos/output.mp4"):
+
+
+    #1. Primera parte: Procesamiento del video e inicialización de variables y metodos
+
     cap = cv.VideoCapture(video_path)
 
-    fourcc = cv.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv.VideoWriter_fourcc(*'mp4v') #Codec del video
     fps = cap.get(cv.CAP_PROP_FPS)
     width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
-    out = cv.VideoWriter(output_path, fourcc, fps, (width, height))
+    out = cv.VideoWriter(output_path, fourcc, fps, (width, height)) #salida del video procesado (obejto)
 
     kalman = initialize_kalman()
 
@@ -27,6 +31,7 @@ def process_video(video_path, output_path="videos/output.mp4"):
     prev_positions = []
     prev_time = None
     speed_measurements = []
+    #2. segunda parte: Ciclo de lectura del video
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -35,6 +40,8 @@ def process_video(video_path, output_path="videos/output.mp4"):
 
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         ball_position, mask = detect_ball(frame, hsv, lower_colors, upper_colors)
+
+        #ajustamos filtro kalman y guardamos la posicion además eliminamos la posicion mas antigua
 
         if ball_position:
             measurement = np.array([[np.float32(ball_position[0])], [np.float32(ball_position[1])]])
@@ -46,17 +53,23 @@ def process_video(video_path, output_path="videos/output.mp4"):
         prediction = kalman.predict()
         pred_x, pred_y = int(prediction[0]), int(prediction[1])
 
+        #Usamos la posicion predicha para dibujar el circulo
         if ball_position:
             cv.circle(frame, ball_position, 10, (0, 255, 0), 2)
             cv.circle(frame, ball_position, 2, (0, 0, 255), 3)
 
         cv.circle(frame, (pred_x, pred_y), 5, (255, 0, 0), -1)
 
+        #el haz de la pelota
+
         for i in range(1, len(prev_positions)):
             cv.line(frame, prev_positions[i - 1], prev_positions[i], (0, 255, 255), 2)
 
+        #calculo de la velocidad.
         if len(prev_positions) >= 2:
+            #tiempo actual en segundos
             current_time = cv.getTickCount() / cv.getTickFrequency()
+
             if prev_time is not None:
                 displacement = dist(prev_positions[-1], prev_positions[-2])
                 time_sec = current_time - prev_time

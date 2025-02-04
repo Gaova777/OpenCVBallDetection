@@ -16,7 +16,7 @@ async def process_local_video(nameFile: str):
     if not os.path.exists(video_path):
         return {"error": "El archivo de video no existe"}
 
-    processed_video_path = process_video(video_path, output_path)
+    process_video(video_path, output_path)
     
     return {"message": "Procesamiento completado", "download_url": f"/download_video/{output_filename}"}
 
